@@ -1,17 +1,11 @@
 #include <bits/stdc++.h>
+#include "parseLine1.h"
+
 using namespace std;
+vector<int> parseLine1(const std::string& line);
 
-vector<int> parseLine(const string& line) {
-    vector<int> result;
-    stringstream ss(line);
-    int number;
-    while (ss >> number) {
-        result.push_back(number);
-    }
-    return result;
-}
 
-void nonpremsjf(map<int, string>& names, vector<vector<int>>& data) {
+void fifo1(map<int, string>& names, vector<vector<int>>& data) {
     int noproc = data.size();
     vector<vector<int>> details(noproc, vector<int>(6, 0));
     int time = 0;
@@ -23,7 +17,7 @@ void nonpremsjf(map<int, string>& names, vector<vector<int>>& data) {
     }
 
     // Priority queue for ready processes (shortest job first, non-preemptive)
-    priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> pq;
+    queue<pair<int, pair<int, int>>> pq;
 
     // Wait queue for processes undergoing I/O
     queue<pair<int, pair<int, int>>> wait;
@@ -45,7 +39,7 @@ void nonpremsjf(map<int, string>& names, vector<vector<int>>& data) {
 
         // Process the current shortest job in the priority queue
         if (!pq.empty()) {
-            pair<int, pair<int, int>> p = pq.top();
+            pair<int, pair<int, int>> p = pq.front();
             pq.pop();
 
             int rt = p.first;   // remaining time (run time)
@@ -113,8 +107,8 @@ void nonpremsjf(map<int, string>& names, vector<vector<int>>& data) {
     }
 }
 
-int main() {
-    ifstream inputFile("process1.dat");
+void runFIFO1Cpu(const std::string& workloadFile) {
+    ifstream inputFile(workloadFile);
     string line;
     vector<vector<int>> data;
 
@@ -132,7 +126,7 @@ int main() {
         }
 
         if (insidePre) {
-            vector<int> parsedLine = parseLine(line);
+            vector<int> parsedLine = parseLine1(line);
             if (!parsedLine.empty()) {
                 data.push_back(parsedLine);
             }
@@ -149,7 +143,6 @@ int main() {
     names.insert({4, "Waiting Time"});
     names.insert({5, "I/O Time"});
 
-    nonpremsjf(names, data);
-    
-    return 0;
+    fifo1(names, data);
+
 }

@@ -1,19 +1,12 @@
 #include <bits/stdc++.h>
-using namespace std;
+#include "parseLine1.h"
 
-// Function to parse a line of integers from the input
-vector<int> parseLine(const string& line) {
-    vector<int> result;
-    stringstream ss(line);
-    int number;
-    while (ss >> number) {
-        result.push_back(number);
-    }
-    return result;
-}
+using namespace std;
+vector<int> parseLine1(const std::string& line);
+
 
 // Function to handle round-robin scheduling
-void roundrob(map<int, string> &names, vector<vector<int>> &data)
+void RR1(map<int, string> &names, vector<vector<int>> &data)
 {
     int time = 0, quantum = 2;  // Set quantum time
     int noproc = data.size();
@@ -137,8 +130,8 @@ void roundrob(map<int, string> &names, vector<vector<int>> &data)
     }
 }
 
-int main() {
-    ifstream inputFile("process1.dat");
+void runRR1Cpu(const std::string& workloadFile) {
+    ifstream inputFile(workloadFile);
     string line;
     vector<vector<int>> data;
 
@@ -156,7 +149,7 @@ int main() {
         }
 
         if (insidePre) {
-            vector<int> parsedLine = parseLine(line);
+            vector<int> parsedLine = parseLine1(line);
             if (!parsedLine.empty()) {
                 data.push_back(parsedLine);
             }
@@ -173,6 +166,6 @@ int main() {
     names.insert({4, "Waiting Time"});
     names.insert({5, "I/O Time"});
 
-    roundrob(names, data);
-    return 0;
+    RR1(names, data);
+
 }

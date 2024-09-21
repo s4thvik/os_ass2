@@ -1,19 +1,11 @@
 #include<bits/stdc++.h>
+#include "parseLine1.h"
 
 using namespace std;
-
-vector<int> parseLine(const string& line) {
-    vector<int> result;
-    stringstream ss(line);
-    int number;
-    while (ss >> number) {
-        result.push_back(number);
-    }
-    return result;
-}
+vector<int> parseLine1(const std::string& line);
 
 
-void premsjf(map<int,string> &names, vector<vector<int>> &data)
+void premsjf1(map<int,string> &names, vector<vector<int>> &data)
 {
     int noproc = data.size();
     vector<vector<int>> details(noproc,vector<int>(6,0));
@@ -154,8 +146,8 @@ void premsjf(map<int,string> &names, vector<vector<int>> &data)
     }    
 }
 
-int main() {
-    ifstream inputFile("process1.dat");
+void runPSJF1Cpu(const std::string& workloadFile) {
+    ifstream inputFile(workloadFile);
     string line;
     vector<vector<int>> data;
 
@@ -173,7 +165,7 @@ int main() {
         }
 
         if (insidePre) {
-            vector<int> parsedLine = parseLine(line);
+            vector<int> parsedLine = parseLine1(line);
             if (!parsedLine.empty()) {
                 data.push_back(parsedLine);
             }
@@ -190,7 +182,5 @@ int main() {
     names.insert({4, "Waiting Time"});
     names.insert({5, "I/O Time"});
     
-    premsjf(names, data);
-
-    return 0;
+    premsjf1(names, data);
 }

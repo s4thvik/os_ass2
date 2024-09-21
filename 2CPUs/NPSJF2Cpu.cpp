@@ -1,23 +1,17 @@
 #include <bits/stdc++.h>
+#include "NPSJF2Cpu.h"
+#include "parseLine2.h"
+
 
 using namespace std;
+vector<int> parseLine2(const std::string& line);
 
-vector<int> parseLine(const string& line) {
-    vector<int> result;
-    stringstream ss(line);
-    int number;
-    while (ss >> number) {
-        result.push_back(number);
-    }
-    return result;
-}
-
-vector<vector<int>> premsjf(map<int, string>& names, vector<vector<int>>& data) {
+vector<vector<int>> Npremsjf2(map<int, string>& names, vector<vector<int>>& data) {
     int noproc = data.size();
     vector<vector<int>> details(noproc, vector<int>(6, 0));  // process details: AT, CT, RT, MK, WT, IO
     int time = 0;
     vector<pair<int, int>> CPU(2, {-1, -1});  // (remaining time, process id)
-    queue<pair<int, int>, deque<pair<int, int>>> pq;  // (remaining time, process id) with deque
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;  // (remaining time, process id)
     map<int, vector<int>> wait;  // stores waiting processes with time as key
     vector<bool> cpuFree(2, true); // Track if CPUs are free
     vector<int> indices(noproc, 0);
@@ -84,7 +78,7 @@ vector<vector<int>> premsjf(map<int, string>& names, vector<vector<int>>& data) 
         // Assign processes to available CPUs
         for (int cpuIdx = 0; cpuIdx < 2; cpuIdx++) {
             if (cpuFree[cpuIdx] && !pq.empty()) {
-                pair<int, int> top = pq.front();
+                pair<int, int> top = pq.top();
                 pq.pop();
                 CPU[cpuIdx] = top;
                 processDetails[cpuIdx].push_back({cpuIdx, top.second, indices[top.second], time, time + top.first});
@@ -121,8 +115,8 @@ vector<vector<int>> premsjf(map<int, string>& names, vector<vector<int>>& data) 
     return details;
 }
 
-int main() {
-    ifstream inputFile("process1.dat");
+void runNPSJF2Cpu(const std::string& workloadFile) {
+    ifstream inputFile(workloadFile); // Replace hardcoded file with passed file name
     string line;
     vector<vector<int>> data;
     bool insidePre = false;
@@ -137,7 +131,7 @@ int main() {
             continue;
         }
         if (insidePre) {
-            vector<int> parsedLine = parseLine(line);
+            vector<int> parsedLine = parseLine2(line);
             if (!parsedLine.empty()) {
                 data.push_back(parsedLine);
             }
@@ -152,7 +146,5 @@ int main() {
     names.insert({3, "Makespan"});
     names.insert({4, "Waiting Time"});
 
-    vector<vector<int>> details = premsjf(names, data);
-
-    return 0;
+    vector<vector<int>> details = Npremsjf2(names, data);
 }

@@ -1,6 +1,8 @@
 #include <bits/stdc++.h>
-
+#include "RR2Cpu.h"
+#include "parseLine2.h"
 using namespace std;
+
 
 // Structure to store CPU run details
 struct CPURun {
@@ -10,19 +12,10 @@ struct CPURun {
     int end_time;      // End time of the run
     int cpu_burst;   // CPU burst for this run
 };
+vector<int> parseLine2(const std::string& line);
 
-// Function to parse a line of integers
-vector<int> parseLine(const string& line) {
-    vector<int> result;
-    stringstream ss(line);
-    int number;
-    while (ss >> number) {
-        result.push_back(number);
-    }
-    return result;
-}
 
-void premsjf(map<int, string>& names, vector<vector<int>>& data) {
+void RR2(map<int, string>& names, vector<vector<int>>& data) {
     int noproc = data.size();
     vector<vector<int>> details(noproc, vector<int>(6, 0));  // process details: AT, CT, RT, MK, WT, I/O
     int time = 0, quantum = 10, count1 = 0, count2 = 0;
@@ -323,12 +316,8 @@ void premsjf(map<int, string>& names, vector<vector<int>>& data) {
 
 }
 
-int main() {
-    ifstream inputFile("process1.dat");
-    if (!inputFile.is_open()) {
-        cerr << "Error opening file 'process1.dat'" << endl;
-        return 1;
-    }
+void runRR2Cpu(const std::string& workloadFile) {
+    ifstream inputFile(workloadFile);
     string line;
     vector<vector<int>> data;
     bool insidePre = false;
@@ -343,18 +332,13 @@ int main() {
             continue;
         }
         if (insidePre) {
-            vector<int> parsedLine = parseLine(line);
+            vector<int> parsedLine = parseLine2(line);
             if (!parsedLine.empty()) {
                 data.push_back(parsedLine);
             }
         }
     }
     inputFile.close();
-
-    if (data.empty()) {
-        cerr << "No process data found in 'process1.dat'" << endl;
-        return 1;
-    }
 
     map<int, string> names;
     names.insert({0, "Arrival Time"});
@@ -364,7 +348,5 @@ int main() {
     names.insert({4, "Waiting Time"});
     names.insert({5, "I/O Time"});
 
-    premsjf(names, data);
-
-    return 0;
+    RR2(names, data);
 }

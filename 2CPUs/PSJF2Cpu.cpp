@@ -1,28 +1,22 @@
 #include <bits/stdc++.h>
+#include "PSJF2Cpu.h"
+#include "parseLine2.h"
 
 using namespace std;
+vector<int> parseLine2(const std::string& line);
 
 // Structure to hold CPU statistics
-struct CPUStat {
-    int pid;        // Process ID
-    int burst;      // Current burst number
-    int start_time; // Start time of the burst
-    int end_time;   // End time of the burst
-};
+// struct CPUStat {
+//     int pid;        // Process ID
+//     int burst;      // Current burst number
+//     int start_time; // Start time of the burst
+//     int end_time;   // End time of the burst
+// };
 
 // Function to parse a line of integers
-vector<int> parseLine(const string& line) {
-    vector<int> result;
-    stringstream ss(line);
-    int number;
-    while (ss >> number) {
-        result.push_back(number);
-    }
-    return result;
-}
 
 // Preemptive Shortest Job First Scheduling Function
-vector<vector<int>> premsjf(map<int, string>& names, vector<vector<int>>& data,
+vector<vector<int>> premsjf2(map<int, string>& names, vector<vector<int>>& data,
                             vector<CPUStat>& cpu0_stats, vector<CPUStat>& cpu1_stats) {
     int noproc = data.size();
     vector<vector<int>> details(noproc, vector<int>(6, 0));  // process details: AT, CT, RT, MK, WT, I/O Time
@@ -192,8 +186,8 @@ vector<vector<int>> premsjf(map<int, string>& names, vector<vector<int>>& data,
     return details;
 }
 
-int main() {
-    ifstream inputFile("process1.dat");
+void runPSJF2Cpu(const std::string& workloadFile) {
+    ifstream inputFile(workloadFile);
     string line;
     vector<vector<int>> data;
     bool insidePre = false;
@@ -209,7 +203,7 @@ int main() {
             continue;
         }
         if (insidePre) {
-            vector<int> parsedLine = parseLine(line);
+            vector<int> parsedLine = parseLine2(line);
             if (!parsedLine.empty()) {
                 data.push_back(parsedLine);
             }
@@ -231,7 +225,7 @@ int main() {
     vector<CPUStat> cpu1_stats;
 
     // Perform scheduling
-    vector<vector<int>> details = premsjf(names, data, cpu0_stats, cpu1_stats);
+    vector<vector<int>> details = premsjf2(names, data, cpu0_stats, cpu1_stats);
 
     // Output process details
     int noproc = data.size();
@@ -263,6 +257,4 @@ int main() {
         }
         cout << endl;
     }
-
-    return 0;
 }
