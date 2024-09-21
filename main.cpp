@@ -16,6 +16,20 @@ using namespace std;
 #include "1Cpus/RR1Cpu.h"
 #include "2Cpus/RR2Cpu.h"
 
+void DetailsOne()
+{
+    cout << "--------------------" << endl;
+    cout << "Running on 1 CPU" << endl;
+    cout << "--------------------" << endl;
+}
+
+void DetailsTwo()
+{
+    cout << "-------------------------------------" << endl;
+    cout << "Running on 2 CPUs" << endl;
+    cout << "-------------------------------------" << endl;
+}
+
 int main(int argc, char* argv[]) {
     if (argc != 3) {
         std::cerr << "Usage: " << argv[0] << " <scheduling-algorithm> <path-to-workload-description-file>\n";
@@ -25,11 +39,6 @@ int main(int argc, char* argv[]) {
     int algorithmChoice = std::stoi(argv[1]);
     std::string workloadFile = argv[2];
 
-    cout << "Scheduling Algorithms:\n";
-    cout << "1: First In First Out (FIFO)\n";
-    cout << "2: Non-Preemptive Shortest Job First (NPSJF)\n";
-    cout << "3: Preemptive Shortest Job First (PSJF)\n";
-    cout << "4: Round Robin (RR)\n\n";
     map <int, string> algoNames;
     algoNames[1] = "First In First Out (FIFO)";
     algoNames[2] = "Non-Preemptive Shortest Job First (NPSJF)";
@@ -39,19 +48,27 @@ int main(int argc, char* argv[]) {
 
     switch (algorithmChoice) {
         case 1:
+            DetailsOne();
             runFIFO1Cpu(workloadFile);
+            DetailsTwo();
             runFIFO2Cpu(workloadFile);
             break;
         case 2:
+            DetailsOne();
             runNPSJF1Cpu(workloadFile);
+            DetailsTwo();
             runNPSJF2Cpu(workloadFile);
             break;
         case 3:
+            DetailsOne();
             runPSJF1Cpu(workloadFile);
+            DetailsTwo();
             runPSJF2Cpu(workloadFile);
             break;
         case 4:
+            DetailsOne();
             runRR1Cpu(workloadFile);
+            DetailsTwo();
             runRR2Cpu(workloadFile);
             break;
         default:

@@ -15,10 +15,19 @@ OBJ1 = $(SRC1:.cpp=.o)
 OBJ2 = $(SRC2:.cpp=.o)
 
 # Executable
-EXEC = scheduling_sim
+EXEC = simulator
 
 # Default rule
 all: $(EXEC)
+	@echo ------------------------------------------------
+	@echo Scheduling Algorithms:
+	@echo 1: First In First Out (FIFO)
+	@echo 2: Non-Preemptive Shortest Job First (NPSJF)
+	@echo 3: Preemptive Shortest Job First (PSJF)
+	@echo 4: Round Robin (RR)
+	@echo "Usage : ./simulator.exe <scheduling-algorithm> <path-to-workload-description-file>"
+	@echo Example usage : ./simulator.exe 1 process1.dat
+	@echo ------------------------------------------------
 
 # Link all object files
 $(EXEC): main.o $(OBJ1) $(OBJ2)
