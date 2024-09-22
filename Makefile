@@ -37,10 +37,12 @@ $(EXEC): main.o $(OBJ1) $(OBJ2)
 main.o: main.cpp
 	$(CXX) $(CXXFLAGS) -c main.cpp
 
-$(DIR1Cpus)/%.o: $(DIR1Cpus)/%.cpp $(DIR1Cpus)/%.h
+# Compile source files in 1Cpus directory
+$(DIR1Cpus)/%.o: $(DIR1Cpus)/%.cpp 
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(DIR2Cpus)/%.o: $(DIR2Cpus)/%.cpp $(DIR2Cpus)/%.h
+# Compile source files in 2Cpus directory
+$(DIR2Cpus)/%.o: $(DIR2Cpus)/%.cpp 
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Clean rule
@@ -50,5 +52,3 @@ clean:
 # Run rule
 run: all
 	./$(EXEC)
-
-# Makefile ends
