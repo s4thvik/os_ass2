@@ -1,4 +1,11 @@
-#include<bits/stdc++.h>
+#include <iostream>
+#include <bits/stdc++.h>
+#include <vector>
+#include <string>
+#include <algorithm>  // For sorting
+#include <map>  // For maps
+#include <queue>  // For queues
+#include <iostream>
 #include "parseLine1.h"
 
 using namespace std;

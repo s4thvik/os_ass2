@@ -1,4 +1,5 @@
 #include <iostream>
+#include <bits/stdc++.h>
 #include <string>
 #include <cstdlib>
 using namespace std;
@@ -15,6 +16,9 @@ using namespace std;
 
 #include "1Cpus/RR1Cpu.h"
 #include "2Cpus/RR2Cpu.h"
+
+#include "2CPUs/parseLine2.h"
+#include "1CPUs/parseLine1.h"
 
 void DetailsOne()
 {

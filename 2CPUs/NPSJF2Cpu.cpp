@@ -1,9 +1,14 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>  // For sorting
+#include <map>  // For maps
+#include <queue>  // For queues
 #include "NPSJF2Cpu.h"
 #include "parseLine2.h"
 
-
 using namespace std;
+
 vector<int> parseLine2(const std::string& line);
 
 vector<vector<int>> Npremsjf2(map<int, string>& names, vector<vector<int>>& data) {
@@ -16,7 +21,7 @@ vector<vector<int>> Npremsjf2(map<int, string>& names, vector<vector<int>>& data
     vector<bool> cpuFree(2, true); // Track if CPUs are free
     vector<int> indices(noproc, 0);
     vector<tuple<int, int, int, int, int>> processDetails[2];  // CPU-wise process details 
-    
+
     // Initialize first process on CPU 0
     if (!data.empty()) {
         indices[0] = 1;
@@ -33,10 +38,10 @@ vector<vector<int>> Npremsjf2(map<int, string>& names, vector<vector<int>>& data
 
         // Handle waiting processes that complete their I/O at this time
         if (wait.find(time) != wait.end()) {
-            for (int i = 0; i < wait[time].size(); i++) {
+            for (std::vector<int>::size_type i = 0; i < wait[time].size(); i++) {
                 int pid = wait[time][i];
                 indices[pid]++;
-                if (indices[pid] < data[pid].size() && data[pid][indices[pid]] != -1) {
+                if (indices[pid] < static_cast<int>(data[pid].size()) && data[pid][indices[pid]] != -1) {
                     pq.push({data[pid][indices[pid]], pid});
                     details[pid][2] += data[pid][indices[pid]];  // Add to run time
                 } else {
@@ -63,7 +68,7 @@ vector<vector<int>> Npremsjf2(map<int, string>& names, vector<vector<int>>& data
                 if (CPU[cpuIdx].first == 0) {
                     int ind = CPU[cpuIdx].second;
                     indices[ind]++;
-                    if (indices[ind] < data[ind].size() && data[ind][indices[ind]] != -1) {
+                    if (indices[ind] < static_cast<int>(data[ind].size()) && data[ind][indices[ind]] != -1) {
                         wait[time + data[ind][indices[ind]]].push_back(ind);  // Waiting for I/O
                         details[ind][5] = data[ind][indices[ind]];  // I/O Time
                     } else {

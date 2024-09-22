@@ -1,4 +1,12 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <bits/stdc++.h>  // This is not a good practice, consider including specific headers
+#include <vector>
+#include <string>
+#include <algorithm>  // For sorting
+#include <map>  // For maps
+#include <queue>  // For queues
+#include <deque> // For deque
+#include <iostream>
 #include "FIFO2Cpu.h"
 #include "parseLine2.h"
 
@@ -33,11 +41,12 @@ vector<vector<int>> fifo2(map<int, string>& names, vector<vector<int>>& data) {
         time++;
 
         // Handle waiting processes that complete their I/O at this time
+        // Handle waiting processes that complete their I/O at this time
         if (wait.find(time) != wait.end()) {
-            for (int i = 0; i < wait[time].size(); i++) {
+            for (std::vector<int>::size_type i = 0; i < wait[time].size(); i++) {
                 int pid = wait[time][i];
                 indices[pid]++;
-                if (indices[pid] < data[pid].size() && data[pid][indices[pid]] != -1) {
+                if (indices[pid] < static_cast<int>(data[pid].size()) && data[pid][indices[pid]] != -1) {
                     pq.push({data[pid][indices[pid]], pid});
                     details[pid][2] += data[pid][indices[pid]];  // Add to run time
                 } else {
@@ -49,7 +58,7 @@ vector<vector<int>> fifo2(map<int, string>& names, vector<vector<int>>& data) {
 
         // Check if any process arrives at this time
         for (int i = 0; i < noproc; i++) {
-            if (time == data[i][0] && indices[i] == 0) { // Ensure a process is added only once
+            if (time == data[i][0] && indices[i] == 0) {
                 pq.push({data[i][1], i});
                 indices[i] = 1;
                 details[i][0] = time;  // Arrival time
@@ -64,8 +73,8 @@ vector<vector<int>> fifo2(map<int, string>& names, vector<vector<int>>& data) {
                 if (CPU[cpuIdx].first == 0) {
                     int ind = CPU[cpuIdx].second;
                     indices[ind]++;
-                    if (indices[ind] < data[ind].size() && data[ind][indices[ind]] != -1) {
-                        wait[time + data[ind][indices[ind]]].push_back(ind);  // Waiting for I/O
+                    if (indices[ind] < static_cast<int>(data[ind].size()) && data[ind][indices[ind]] != -1) {
+                        wait[time + data[ind][indices[ind]]].push_back(ind);
                         details[ind][5] = data[ind][indices[ind]];  // I/O Time
                     } else {
                         details[ind][1] = time;  // Completion time
@@ -75,6 +84,7 @@ vector<vector<int>> fifo2(map<int, string>& names, vector<vector<int>>& data) {
                 }
             }
         }
+
 
         // Assign processes to available CPUs
         for (int cpuIdx = 0; cpuIdx < 2; cpuIdx++) {

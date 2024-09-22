@@ -1,54 +1,57 @@
 # Compiler
 CXX = g++
-CXXFLAGS = -Wall -std=c++17 -w -lstdc++ -m64  # Add -m64 for 64-bit
+CXXFLAGS = -Wall -Werror -std=c++11
 
 # Directories
-DIR1Cpus = 1Cpus
-DIR2Cpus = 2Cpus
+ONE_CPU_DIR = 1CPUs
+TWO_CPU_DIR = 2CPUs
 
 # Source files
-SRC1 =  $(DIR1Cpus)/FIFO1Cpu.cpp $(DIR1Cpus)/NPSJF1Cpu.cpp $(DIR1Cpus)/PSJF1Cpu.cpp $(DIR1Cpus)/RR1Cpu.cpp $(DIR1Cpus)/parseLine1.cpp
-SRC2 = $(DIR2Cpus)/FIFO2Cpu.cpp $(DIR2Cpus)/NPSJF2Cpu.cpp $(DIR2Cpus)/PSJF2Cpu.cpp $(DIR2Cpus)/RR2Cpu.cpp $(DIR2Cpus)/parseLine2.cpp
+ONE_CPU_SRC = $(ONE_CPU_DIR)/FIFO1Cpu.cpp \
+              $(ONE_CPU_DIR)/NPSJF1Cpu.cpp \
+              $(ONE_CPU_DIR)/PSJF1Cpu.cpp \
+              $(ONE_CPU_DIR)/RR1Cpu.cpp \
+              $(ONE_CPU_DIR)/parseLine1.cpp
+
+TWO_CPU_SRC = $(TWO_CPU_DIR)/FIFO2Cpu.cpp \
+              $(TWO_CPU_DIR)/NPSJF2Cpu.cpp \
+              $(TWO_CPU_DIR)/PSJF2Cpu.cpp \
+              $(TWO_CPU_DIR)/RR2Cpu.cpp \
+              $(TWO_CPU_DIR)/parseLine2.cpp
+
+# Main file
+MAIN_SRC = main.cpp
 
 # Object files
-OBJ1 = $(SRC1:.cpp=.o)
-OBJ2 = $(SRC2:.cpp=.o)
+ONE_CPU_OBJ = $(ONE_CPU_SRC:.cpp=.o)
+TWO_CPU_OBJ = $(TWO_CPU_SRC:.cpp=.o)
+MAIN_OBJ = $(MAIN_SRC:.cpp=.o)
 
-# Executable
-EXEC = simulator
+# Output executable
+OUTPUT = simulator.exe
 
-# Default rule
-all: $(EXEC)
-	@echo ------------------------------------------------
-	@echo Scheduling Algorithms:
-	@echo 1: First In First Out (FIFO)
-	@echo 2: Non-Preemptive Shortest Job First (NPSJF)
-	@echo 3: Preemptive Shortest Job First (PSJF)
-	@echo 4: Round Robin (RR)
-	@echo "Usage : ./simulator.exe <scheduling-algorithm> <path-to-workload-description-file>"
-	@echo Example usage : ./simulator.exe 1 process1.dat
-	@echo ------------------------------------------------
+# Targets
+all: $(OUTPUT)
 
-# Link all object files
-$(EXEC): main.o $(OBJ1) $(OBJ2)
-	$(CXX) $(CXXFLAGS) -o $(EXEC) main.o $(OBJ1) $(OBJ2)
+$(OUTPUT): $(MAIN_OBJ) $(ONE_CPU_OBJ) $(TWO_CPU_OBJ)
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Compile individual source files
-main.o: main.cpp
-	$(CXX) $(CXXFLAGS) -c main.cpp
+# Rule to compile .cpp files to .o files
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Compile source files in 1Cpus directory
-$(DIR1Cpus)/%.o: $(DIR1Cpus)/%.cpp 
-	$(CXX) $(CXXFLAGS) -c $< -o $@ -m64
-
-# Compile source files in 2Cpus directory
-$(DIR2Cpus)/%.o: $(DIR2Cpus)/%.cpp 
-	$(CXX) $(CXXFLAGS) -c $< -o $@ -m64 
-
-# Clean rule
+# Clean target to remove object files and executable
 clean:
-	rm -f $(EXEC) main.o $(OBJ1) $(OBJ2)
+	rm -f $(ONE_CPU_OBJ) $(TWO_CPU_OBJ) $(MAIN_OBJ) $(OUTPUT)
 
-# Run rule
-run: all
-	./$(EXEC)
+# Run target to print messages
+run: $(OUTPUT)
+	@echo "Scheduling Algorithms:"
+	@echo "First In First Out (FIFO)"
+	@echo "Non-Preemptive Shortest Job First (NPSJF)"
+	@echo "Preemptive Shortest Job First (PSJF)"
+	@echo "Round Robin (RR)"
+	@echo "\"Usage : ./simulator.exe <scheduling-algorithm> <path-to-workload-description-file>\""
+	@echo "Example usage : ./simulator.exe 1 process1.dat"
+
+.PHONY: all clean run

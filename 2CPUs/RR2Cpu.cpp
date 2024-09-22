@@ -1,5 +1,12 @@
+#include <iostream>
 #include <bits/stdc++.h>
+#include <vector>
+#include <string>
+#include <algorithm>  // For sorting
+#include <map>  // For maps
+#include <queue>  // For queues
 #include "RR2Cpu.h"
+#include <iostream>
 #include "parseLine2.h"
 using namespace std;
 
@@ -39,8 +46,8 @@ void RR2(map<int, string>& names, vector<vector<int>>& data) {
     // Track current running process and start time for each CPU
     int CPU0_current_pid = 0;
     int CPU1_current_pid = -1;
-    int CPU0_run_start_time = 0;
-    int CPU1_run_start_time = 0;
+    // int CPU0_run_start_time = 0;
+    // int CPU1_run_start_time = 0;
     // Map to track run numbers for each process
     map<int, int> process_run_number;
     process_run_number[0] = 1; // First run for process 0
@@ -54,10 +61,10 @@ void RR2(map<int, string>& names, vector<vector<int>>& data) {
         // Handling waiting processes at current time
         if (wait.size() > 0) {
             if (wait.find(time) != wait.end()) {
-                for (int i = 0; i < wait[time].size(); i++) {
+                for (int i = 0; i < (int)wait[time].size(); i++) {  // Corrected size access
                     int pid = wait[time][i];
                     indices[pid]++;
-                    if (indices[pid] < data[pid].size() && data[pid][indices[pid]] != -1) {
+                    if (indices[pid] < (int)data[pid].size() && data[pid][indices[pid]] != -1) {
                         pq.push({data[pid][indices[pid]], pid}); // Add next CPU burst to queue
                         details[pid][2] += data[pid][indices[pid]];  // Update Run Time
                     } else {
@@ -129,7 +136,7 @@ void RR2(map<int, string>& names, vector<vector<int>>& data) {
             // Handle completion or I/O for CPU0
             if (rt1 == 0 && ind1 >= 0) {
                 indices[ind1]++;
-                if (indices[ind1] < data[ind1].size() && data[ind1][indices[ind1]] != -1) {
+                if (indices[ind1] < (int)data[ind1].size() && data[ind1][indices[ind1]] != -1) {
                     // Check if next is CPU burst or IO burst
                     if (indices[ind1] % 2 == 1) {  //  Even indices are I/O, odd are CPU 
                         wait[time + data[ind1][indices[ind1]]].push_back(ind1);  // Waiting for I/O
@@ -145,7 +152,7 @@ void RR2(map<int, string>& names, vector<vector<int>>& data) {
             // Handle completion or I/O for CPU1
             if (rt2 == 0 && ind2 >= 0) {
                 indices[ind2]++;
-                if (indices[ind2] < data[ind2].size() && data[ind2][indices[ind2]] != -1) {
+                if (indices[ind2] < (int)data[ind2].size() && data[ind2][indices[ind2]] != -1) {
                     // Check if next is CPU burst or IO burst
                     if (indices[ind2] % 2 == 1) {  //  Even indices are I/O, odd are CPU 
                         wait[time + data[ind2][indices[ind2]]].push_back(ind2);  // Waiting for I/O

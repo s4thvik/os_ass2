@@ -1,19 +1,15 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>  // For sorting
+#include <map>  // For maps
+#include <queue>  // For queues
 #include "PSJF2Cpu.h"
 #include "parseLine2.h"
 
 using namespace std;
+
 vector<int> parseLine2(const std::string& line);
-
-// Structure to hold CPU statistics
-// struct CPUStat {
-//     int pid;        // Process ID
-//     int burst;      // Current burst number
-//     int start_time; // Start time of the burst
-//     int end_time;   // End time of the burst
-// };
-
-// Function to parse a line of integers
 
 // Preemptive Shortest Job First Scheduling Function
 vector<vector<int>> premsjf2(map<int, string>& names, vector<vector<int>>& data,
@@ -28,7 +24,7 @@ vector<vector<int>> premsjf2(map<int, string>& names, vector<vector<int>>& data,
     vector<int> burst_counters(noproc, 0); // Counts bursts for each process (accurate tracking)
 
     // Initialize CPU0 with the first process (if available)
-    if (data[0][0] == 0) {
+    if (noproc > 0 && data[0][0] == 0) {
         CPU[0] = {data[0][1], 0};
         details[0][0] = data[0][0]; // Arrival time
         details[0][2] += data[0][1]; // Run time
@@ -58,21 +54,19 @@ vector<vector<int>> premsjf2(map<int, string>& names, vector<vector<int>>& data,
         time++;
 
         // Handle waiting processes
-        if (wait.size() > 0) {
-            if (wait.find(time) != wait.end()) {
-                for (int i = 0; i < wait[time].size(); i++) {
-                    int pid = wait[time][i];
-                    indices[pid]++; // Move to the next burst for this process
-                    if (data[pid][indices[pid]] != -1) {
-                        pq.push({data[pid][indices[pid]], pid}); // Add the process to the ready queue
-                        details[pid][2] += data[pid][indices[pid]]; // Add burst time to the runtime
-                        burst_counters[pid]++; // Increment burst counter for this process
-                    } else {
-                        details[pid][1] = time; // Process is completed
-                    }
+        if (!wait.empty() && wait.find(time) != wait.end()) {
+            for (std::vector<int>::size_type i = 0; i < wait[time].size(); i++) {
+                int pid = wait[time][i];
+                indices[pid]++; // Move to the next burst for this process
+                if (indices[pid] < static_cast<int>(data[pid].size()) && data[pid][indices[pid]] != -1) {
+                    pq.push({data[pid][indices[pid]], pid}); // Add the process to the ready queue
+                    details[pid][2] += data[pid][indices[pid]]; // Add burst time to the runtime
+                    burst_counters[pid]++; // Increment burst counter for this process
+                } else {
+                    details[pid][1] = time; // Process is completed
                 }
-                wait.erase(time);
             }
+            wait.erase(time);
         }
 
         // Process arrived at current time
@@ -87,11 +81,10 @@ vector<vector<int>> premsjf2(map<int, string>& names, vector<vector<int>>& data,
         }
 
         // Decrease time on CPUs
-        if (CPU[0].first > 0) {
-            CPU[0].first--;
-        }
-        if (CPU[1].first > 0) {
-            CPU[1].first--;
+        for (int cpuIdx = 0; cpuIdx < 2; cpuIdx++) {
+            if (CPU[cpuIdx].first > 0) {
+                CPU[cpuIdx].first--;
+            }
         }
 
         pair<int, int> p1 = CPU[0], p2 = CPU[1];
@@ -99,27 +92,19 @@ vector<vector<int>> premsjf2(map<int, string>& names, vector<vector<int>>& data,
         int rt1 = p1.first, rt2 = p2.first;
 
         // Check if a process on a CPU is finished
-        if (rt1 == 0 && p1.second != -1) {
-            indices[ind1]++;
-            // Check if there's another burst for the process
-            if (data[ind1][indices[ind1]] != -1) {
-                wait[data[ind1][indices[ind1]] + time].push_back(ind1); // Add to wait queue with arrival time
-                burst_counters[ind1]++; // Increment burst counter for this process
-            } else {
-                details[ind1][1] = time; // Completion time
+        for (int cpuIdx = 0; cpuIdx < 2; cpuIdx++) {
+            if (CPU[cpuIdx].first == 0 && CPU[cpuIdx].second != -1) {
+                int ind = CPU[cpuIdx].second;
+                indices[ind]++;
+                // Check if there's another burst for the process
+                if (indices[ind] < static_cast<int>(data[ind].size()) && data[ind][indices[ind]] != -1) {
+                    wait[data[ind][indices[ind]] + time].push_back(ind); // Add to wait queue with arrival time
+                    burst_counters[ind]++; // Increment burst counter for this process
+                } else {
+                    details[ind][1] = time; // Completion time
+                }
+                CPU[cpuIdx] = {-1, -1}; // Free the CPU
             }
-            CPU[0] = {-1, -1}; // Free the CPU
-        }
-        if (rt2 == 0 && p2.second != -1) {
-            indices[ind2]++;
-            // Check if there's another burst for the process
-            if (data[ind2][indices[ind2]] != -1) {
-                wait[data[ind2][indices[ind2]] + time].push_back(ind2); // Add to wait queue with arrival time
-                burst_counters[ind2]++; // Increment burst counter for this process
-            } else {
-                details[ind2][1] = time; // Completion time
-            }
-            CPU[1] = {-1, -1}; // Free the CPU
         }
 
         // Assign processes to CPUs
@@ -238,14 +223,14 @@ void runPSJF2Cpu(const std::string& workloadFile) {
 
     // Output CPU0 statistics
     cout << "CPU0" << endl;
-    for (auto &stat : cpu0_stats) {
+    for (const auto& stat : cpu0_stats) {
         cout << "P" << stat.pid + 1 << "," << stat.burst << "\t"
              << stat.start_time << "\t" << stat.end_time << endl;
     }
 
     // Output CPU1 statistics
     cout << "CPU1" << endl;
-    for (auto &stat : cpu1_stats) {
+    for (const auto& stat : cpu1_stats) {
         cout << "P" << stat.pid + 1 << "," << stat.burst << "\t"
              << stat.start_time << "\t" << stat.end_time << endl;
     }
